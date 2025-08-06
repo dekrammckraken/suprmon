@@ -2,8 +2,8 @@ SOCKET_PATH = "/tmp/suprlight.sock"
 
 import socket
 from enum import Enum
-from signalemitter import SignalEmitter
-from suprsignal import SuprSignal
+from signal_emitter import SignalEmitter
+from supr_signal import SuprSignal
 import dbus
 
 """

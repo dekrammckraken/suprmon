@@ -1,5 +1,5 @@
-from suprsignal import SuprSignal
-from signalcolor import SignalColor
+from supr_signal import SuprSignal
+from signal_color import SignalColor
 import psutil
 import socket
 import os
