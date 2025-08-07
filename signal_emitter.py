@@ -49,10 +49,10 @@ class SignalEmitter:
         return COLORS['dark0_hard']
 
     def unused_signal(self, sensor) -> SuprSignal:
-        return SuprSignal(sensor, COLORS['dark0_hard'])
+        return SuprSignal(sensor, COLORS['bright_aqua'])
 
     def off_signal(self, sensor) -> str:
-        return SuprSignal(sensor, COLORS['off'])
+        return SuprSignal(sensor, COLORS['dark0_hard'])
 
     def mem_signal(self, sensor=(0, 0)) -> SuprSignal:
         mem = psutil.virtual_memory()

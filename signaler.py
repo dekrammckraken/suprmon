@@ -28,6 +28,9 @@ class Signaler:
         self.dashboard = [
             self.emitter.off_signal((2,0)),
             self.emitter.off_signal((2,1)),
+            self.emitter.off_signal((2,2)),
+            self.emitter.off_signal((2,3)),
+            self.emitter.off_signal((2,4)),
             
             self.emitter.off_signal((3,0)),
             self.emitter.off_signal((3,1)),
@@ -52,9 +55,11 @@ class Signaler:
         self.dashboard = [
             #Core info
             self.emitter.mem_signal((2,0)),
-            self.emitter.wan_signal("alchemicats.pet", (2,1)),
+            self.emitter.mem_signal((2,1)),
             self.emitter.bt_signal((2,2)),
-            
+            self.emitter.off_signal((2,3)),
+            self.emitter.off_signal((2,4)),
+
             #termal
             self.emitter.term_signal(0, (3,0)),
             self.emitter.term_signal(1, (3,1)),
@@ -68,6 +73,7 @@ class Signaler:
             self.emitter.mount_signal("/mnt/SupportDisk", (4,2)),
             self.emitter.mount_signal("/mnt/BackupDisk", (4,3)),
             self.emitter.mount_signal("/mnt/WhiteRabbit", (4,4)),
+            
             #Free space
             self.emitter.fdisk_signal("/", (5,0)),
             self.emitter.fdisk_signal("/mnt/DataDisk", (5,1)),
