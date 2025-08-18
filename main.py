@@ -6,22 +6,24 @@ import sys
 
 def exec_command(sig: Signaler):
   
-    command = sys.argv[1]
-    
-    match command:
-        case "--base":
-            return [sig.base]
-        case "--therm":
-            return [sig.thermal]
-        case "--disks":
-            return [sig.disks_mounts]
-        case "--space":
-            return [sig.disks_spaces]
-        case "--all":
-             return [sig.base, sig.thermal, sig.disks_mounts, sig.disks_spaces]
-        case "--clr":
-             return [sig.clear_all]
-            
+    try:
+        command = sys.argv[1]
+        
+        match command:
+            case "--base":
+                return [sig.base]
+            case "--therm":
+                return [sig.thermal]
+            case "--disks":
+                return [sig.disks_mounts]
+            case "--space":
+                return [sig.disks_spaces]
+            case "--all":
+                return [sig.base, sig.thermal, sig.disks_mounts, sig.disks_spaces]
+            case "--clr":
+                return [sig.clear_all]
+    except:
+        sys.exit(1)
 
 
 def main():

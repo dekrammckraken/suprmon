@@ -1,20 +1,16 @@
 SOCKET_PATH = "/tmp/suprlight.sock"
 
 import socket
-from enum import Enum
+import traceback
 from signal_emitter import SignalEmitter
 from supr_signal import SuprSignal
 import dbus
 
-"""
-1x0 = first pixel of matrix
-"""
-
 
 class Signaler:
-
     def __init__(self):
         self.emitter = SignalEmitter()
+        self.signals = []
 
     def send(self):
         try:
@@ -23,77 +19,70 @@ class Signaler:
                 for signal in self.signals:
                     sock.sendall(signal.compose().encode("utf-8"))
                 sock.shutdown(socket.SHUT_WR)
-        except Exception as e:
+        except Exception:
             print("Failed to send:\n" + traceback.format_exc())
 
-
     def clear_all(self):
-        self.clear_row(2)
-        self.clear_row(3)
-        self.clear_row(4)
-        self.clear_row(5)
+        for row in range(2, 6):
+            self.clear_row(row)
         self.send()
 
-    def clear_row(self, row: int):
+    def clear_row(self, row: int, length=5):
         self.signals = [
-            self.emitter.off_signal((row, 0)),
-            self.emitter.off_signal((row, 1)),
-            self.emitter.off_signal((row, 2)),
-            self.emitter.off_signal((row, 3)),
-            self.emitter.off_signal((row, 4)),
+            self.emitter.off((row, col)) for col in range(length)
         ]
         self.send()
+
     def base(self):
         self.clear_row(2)
-        self.add_mem_signal(0)
-        self.add_mem_signal(1)
-        self.add_unused_signal(2)
-        self.add_unused_signal(3)
-        self.add_unused_signal(4)
+        self.add_mem(0)
+        self.add_mem(1)
+        self.add_unused(2)
+        self.add_unused(3)
+        self.add_unused(4)
         self.send()
 
     def thermal(self):
-        self.clear_row(3)
-        self.add_disk_therm_signal(0, 0)
-        self.add_disk_therm_signal(1, 1)
-        self.add_disk_therm_signal(2, 2)
-        self.add_disk_therm_signal(3, 3)
-        self.add_disk_therm_signal(4, 4)
-        self.add_disk_therm_signal(5, 5)
+        self.clear_row(3, length=6)
+        for i in range(6):
+            self.add_thermal(i, i)
         self.send()
 
     def disks_mounts(self):
         self.clear_row(4)
-        self.add_disk_mount_signal("/", 0)
-        self.add_disk_mount_signal("/mnt/DataDisk", 1)
-        self.add_disk_mount_signal("/mnt/SupportDisk", 2)
-        self.add_disk_mount_signal("/mnt/BackupDisk", 3)
-        self.add_disk_mount_signal("/mnt/WhiteRabbit", 4)
+        self.add_mount("/", 0)
+        self.add_mount("/mnt/DataDisk", 1)
+        self.add_mount("/mnt/SupportDisk", 2)
+        self.add_mount("/mnt/BackupDisk", 3)
+        self.add_mount("/mnt/WhiteRabbit", 4)
         self.send()
 
     def disks_spaces(self):
         self.clear_row(5)
-        self.add_disk_free_space_signal("/", 0)
-        self.add_disk_free_space_signal("/mnt/DataDisk", 1)
-        self.add_disk_free_space_signal("/mnt/SupportDisk", 2)
-        self.add_disk_free_space_signal("/mnt/BackupDisk", 3)
-        self.add_disk_free_space_signal("/mnt/WhiteRabbit", 4)
+        self.add_free_space("/", 0)
+        self.add_free_space("/mnt/DataDisk", 1)
+        self.add_free_space("/mnt/SupportDisk", 2)
+        self.add_free_space("/mnt/BackupDisk", 3)
+        self.add_free_space("/mnt/WhiteRabbit", 4)
         self.send()
 
-    def add_disk_mount_signal(self, mount_point, noled):
-        self.signals.append(self.emitter.mount_signal(mount_point, (4, noled)))
+    def add_mount(self, mount_point, noled):
+        self.signals.append(self.emitter.mounts(mount_point, (4, noled)))
 
-    def add_disk_free_space_signal(self, mount_point, noled):
-        self.signals.append(self.emitter.free_disk_signal(mount_point, (5, noled)))
+    def add_free_space(self, mount_point, noled):
+        self.signals.append(self.emitter.free_disk(mount_point, (5, noled)))
 
-    def add_disk_therm_signal(self, termhal_id, noled):
-        self.signals.append(self.emitter.term_signal(termhal_id, (3, noled)))
+    def add_thermal(self, thermal_id, noled):
+        self.signals.append(self.emitter.thermal(thermal_id, (3, noled)))
 
-    def add_mem_signal(self, noled):
-        self.signals.append(self.emitter.mem_signal((2, noled)))
+    def add_mem(self, noled):
+        self.signals.append(self.emitter.mem((2, noled)))
 
     def add_bluetooth_signal(self, noled):
-        self.signals.append(self.emitter.bt_signal((2, noled)))
+        self.signals.append(self.emitter.bluetooth((2, noled)))
 
-    def add_unused_signal(self, noled):
-        self.signals.append(self.emitter.unused_signal((2, noled)))
+    def add_unused(self, noled):
+        self.signals.append(self.emitter.unused((2, noled)))
+
+    def add_red(self, noled):
+        self.signals.append(self.emitter.error((2, noled)))
