@@ -3,8 +3,6 @@ SOCKET_PATH = "/tmp/suprlight.sock"
 import socket
 import traceback
 from signal_emitter import SignalEmitter
-from supr_signal import SuprSignal
-import dbus
 
 
 class Signaler:
@@ -21,17 +19,21 @@ class Signaler:
                 sock.shutdown(socket.SHUT_WR)
         except Exception:
             print("Failed to send:\n" + traceback.format_exc())
+        finally:
+            self.signals = []  # pulisce dopo l'invio
 
     def clear_all(self):
         for row in range(2, 6):
-            self.clear_row(row)
-        self.send()
+            for col in range(5):
+                self.signals.append(self.emitter.off((row, col)))
 
-    def clear_row(self, row: int, length=5):
-        self.signals = [
-            self.emitter.off((row, col)) for col in range(length)
-        ]
+
         self.send()
+        
+    def clear_row(self, row: int, length=5):
+        for col in range(length):
+            self.signals.append(self.emitter.off((row, col)))
+       
 
     def base(self):
         self.clear_row(2)
@@ -40,31 +42,24 @@ class Signaler:
         self.add_unused(2)
         self.add_unused(3)
         self.add_unused(4)
-        self.send()
+      
 
     def thermal(self):
         self.clear_row(3, length=6)
         for i in range(6):
             self.add_thermal(i, i)
-        self.send()
 
     def disks_mounts(self):
         self.clear_row(4)
-        self.add_mount("/", 0)
-        self.add_mount("/mnt/DataDisk", 1)
-        self.add_mount("/mnt/SupportDisk", 2)
-        self.add_mount("/mnt/BackupDisk", 3)
-        self.add_mount("/mnt/WhiteRabbit", 4)
-        self.send()
+        mounts = ["/", "/mnt/DataDisk", "/mnt/SupportDisk", "/mnt/BackupDisk", "/mnt/WhiteRabbit"]
+        for idx, mp in enumerate(mounts):
+            self.add_mount(mp, idx)
 
     def disks_spaces(self):
         self.clear_row(5)
-        self.add_free_space("/", 0)
-        self.add_free_space("/mnt/DataDisk", 1)
-        self.add_free_space("/mnt/SupportDisk", 2)
-        self.add_free_space("/mnt/BackupDisk", 3)
-        self.add_free_space("/mnt/WhiteRabbit", 4)
-        self.send()
+        mounts = ["/", "/mnt/DataDisk", "/mnt/SupportDisk", "/mnt/BackupDisk", "/mnt/WhiteRabbit"]
+        for idx, mp in enumerate(mounts):
+            self.add_free_space(mp, idx)
 
     def add_mount(self, mount_point, noled):
         self.signals.append(self.emitter.mounts(mount_point, (4, noled)))

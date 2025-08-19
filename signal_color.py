@@ -1,5 +1,27 @@
-class SignalColor:
-    def __init__(self, r=0, g=0, b=0):
+from enum import Enum
+
+
+class SignalColor(Enum):
+    CHARCOAL = (40, 40, 40)
+    BLOOD_RED = (204, 36, 29)
+    OLIVE = (152, 151, 26)
+    AMBER = (215, 153, 33)
+    TEAL = (69, 133, 136)
+    MAUVE = (177, 98, 134)
+    MOSS = (104, 157, 106)
+    TAUPE = (168, 153, 132)
+    CLAY = (146, 131, 116)
+    SCARLET = (251, 73, 52)
+    LIME = (184, 187, 38)
+    GOLD = (250, 189, 47)
+    SEAFOAM = (131, 165, 152)
+    ROSE = (211, 134, 155)
+    MINT = (142, 192, 124)
+    CREAM = (235, 219, 178)
+    COAL = (29, 32, 33)
+    OFF = (0, 0, 0)
+
+    def __init__(self, r, g, b):
         self.r = r
         self.g = g
         self.b = b
@@ -19,7 +41,7 @@ class SignalColor:
             return cls.COAL
 
     @classmethod
-    def get_color_by_switch(cls, avail: bool):
+    def on_off(cls, avail: bool):
         return cls.CREAM if avail else cls.BLOOD_RED
 
     @classmethod
@@ -33,24 +55,3 @@ class SignalColor:
     @classmethod
     def error(cls):
         return cls.BLOOD_RED
-
-
-# Palette (class attributes)
-SignalColor.CHARCOAL = SignalColor(40, 40, 40)
-SignalColor.BLOOD_RED = SignalColor(204, 36, 29)
-SignalColor.OLIVE = SignalColor(152, 151, 26)
-SignalColor.AMBER = SignalColor(215, 153, 33)
-SignalColor.TEAL = SignalColor(69, 133, 136)
-SignalColor.MAUVE = SignalColor(177, 98, 134)
-SignalColor.MOSS = SignalColor(104, 157, 106)
-SignalColor.TAUPE = SignalColor(168, 153, 132)
-SignalColor.CLAY = SignalColor(146, 131, 116)
-SignalColor.SCARLET = SignalColor(251, 73, 52)
-SignalColor.LIME = SignalColor(184, 187, 38)
-SignalColor.GOLD = SignalColor(250, 189, 47)
-SignalColor.SEAFOAM = SignalColor(131, 165, 152)
-SignalColor.ROSE = SignalColor(211, 134, 155)
-SignalColor.MINT = SignalColor(142, 192, 124)
-SignalColor.CREAM = SignalColor(235, 219, 178)
-SignalColor.COAL = SignalColor(29, 32, 33)
-SignalColor.OFF = SignalColor(0, 0, 0)
