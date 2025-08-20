@@ -49,6 +49,10 @@ class SignalColor(Enum):
         return cls.CHARCOAL
 
     @classmethod
+    def unused(cls):
+        return cls.CHARCOAL
+
+    @classmethod
     def off(cls):
         return cls.OFF
 

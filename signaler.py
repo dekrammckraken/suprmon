@@ -20,7 +20,7 @@ class Signaler:
         except Exception:
             print("Failed to send:\n" + traceback.format_exc())
         finally:
-            self.signals = []  # pulisce dopo l'invio
+            self.signals = []
 
     def clear_all(self):
         for row in range(2, 6):
@@ -42,7 +42,8 @@ class Signaler:
         self.add_unused(2)
         self.add_unused(3)
         self.add_unused(4)
-      
+        
+        self.send()
 
     def thermal(self):
         self.clear_row(3, length=6)

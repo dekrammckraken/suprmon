@@ -30,9 +30,9 @@ class SignalEmitter:
     def wan(self, hostname, sensor=(0, 0)) -> SuprSignal:
         try:
             with socket.create_connection((hostname, 443), timeout=5):
-                return SuprSignal(sensor, SignalColor.get_color_by_switch(True))
+                return SuprSignal(sensor, SignalColor.on_off(True))
         except OSError:
-            return SuprSignal(sensor, SignalColor.get_color_by_switch(False))
+            return SuprSignal(sensor, SignalColor.on_off(False))
 
     def is_disk_mounted(self, mount_point):
         for part in psutil.disk_partitions(all=False):
@@ -42,7 +42,7 @@ class SignalEmitter:
 
     def mounts(self, mount_point, sensor=(0, 0)) -> SuprSignal:
         if self.is_disk_mounted(mount_point):
-            return SuprSignal(sensor, SignalColor.get_color_by_switch(True))
+            return SuprSignal(sensor, SignalColor.on_off(True))
         return self.unused(sensor)
 
     def bluetooth(self, sensor=(0, 0)) -> SuprSignal:
@@ -50,7 +50,7 @@ class SignalEmitter:
         adapter = bus.get_object("org.bluez", "/org/bluez/hci0")
         props = dbus.Interface(adapter, "org.freedesktop.DBus.Properties")
         powered = props.Get("org.bluez.Adapter1", "Powered")
-        return SuprSignal(sensor, SignalColor.get_color_by_switch(powered))
+        return SuprSignal(sensor, SignalColor.on_off(powered))
 
     def thermal(self, zone=0, sensor=(0, 0)) -> SuprSignal:
         try:
@@ -60,3 +60,9 @@ class SignalEmitter:
                 return SuprSignal(sensor, SignalColor.percentage(temp_c))
         except Exception:
             return SuprSignal(sensor, SignalColor.unavail())
+
+    def unused(self, sensor=(0,0)) -> SuprSignal:
+        return SuprSignal(sensor, SignalColor.unused())
+
+    def off(self, sensor=(0,0)) -> SuprSignal:
+        return SuprSignal(sensor, SignalColor.off)
