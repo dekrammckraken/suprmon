@@ -15,6 +15,7 @@ class Signaler:
             with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
                 sock.connect(SOCKET_PATH)
                 for signal in self.signals:
+                    print(signal.compose().encode("utf-8"))
                     sock.sendall(signal.compose().encode("utf-8"))
                 sock.shutdown(socket.SHUT_WR)
         except Exception:
@@ -31,12 +32,14 @@ class Signaler:
         self.send()
         
     def clear_row(self, row: int, length=5):
+
         for col in range(length):
             self.signals.append(self.emitter.off((row, col)))
-       
+        
 
     def base(self):
-        self.clear_row(2)
+        #self.clear_row(2)
+        self.send()
         self.add_mem(0)
         self.add_mem(1)
         self.add_unused(2)

@@ -6,7 +6,7 @@ import sys
 
 def exec_command(sig: Signaler):
   
-    return [sig.base]
+    return [sig.clear_all]
 
     command = sys.argv[1]
     

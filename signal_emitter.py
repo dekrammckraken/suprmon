@@ -65,4 +65,4 @@ class SignalEmitter:
         return SuprSignal(sensor, SignalColor.unused())
 
     def off(self, sensor=(0,0)) -> SuprSignal:
-        return SuprSignal(sensor, SignalColor.off)
+        return SuprSignal(sensor, SignalColor.off())
