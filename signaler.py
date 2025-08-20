@@ -21,15 +21,15 @@ class Signaler:
         except Exception:
             print("Failed to send:\n" + traceback.format_exc())
         finally:
-            self.signals = []
+            self.signals.clear()
 
     def clear_all(self):
-        for row in range(2, 6):
-            for col in range(5):
-                self.signals.append(self.emitter.off((row, col)))
 
-
-        self.send()
+        self.clear_row(2)
+        self.clear_row(3)
+        self.clear_row(4)
+        self.clear_row(5)
+        self.send()        
         
     def clear_row(self, row: int, length=5):
 
@@ -38,8 +38,6 @@ class Signaler:
         
 
     def base(self):
-        #self.clear_row(2)
-        self.send()
         self.add_mem(0)
         self.add_mem(1)
         self.add_unused(2)
@@ -53,17 +51,25 @@ class Signaler:
         for i in range(6):
             self.add_thermal(i, i)
 
+        self.send()
+        
     def disks_mounts(self):
         self.clear_row(4)
         mounts = ["/", "/mnt/DataDisk", "/mnt/SupportDisk", "/mnt/BackupDisk", "/mnt/WhiteRabbit"]
+        
         for idx, mp in enumerate(mounts):
             self.add_mount(mp, idx)
 
+        self.send()
+
     def disks_spaces(self):
-        self.clear_row(5)
+        
         mounts = ["/", "/mnt/DataDisk", "/mnt/SupportDisk", "/mnt/BackupDisk", "/mnt/WhiteRabbit"]
+        
         for idx, mp in enumerate(mounts):
             self.add_free_space(mp, idx)
+
+        self.send()
 
     def add_mount(self, mount_point, noled):
         self.signals.append(self.emitter.mounts(mount_point, (4, noled)))
