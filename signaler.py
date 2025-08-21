@@ -3,19 +3,22 @@ SOCKET_PATH = "/tmp/suprlight.sock"
 import socket
 import traceback
 from signal_emitter import SignalEmitter
+from signal_color import SignalColor
+import time
 
 
 class Signaler:
     def __init__(self):
         self.emitter = SignalEmitter()
         self.signals = []
+        self.animating = False
 
     def send(self):
         try:
             with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
                 sock.connect(SOCKET_PATH)
                 for signal in self.signals:
-                    print(signal.compose().encode("utf-8"))
+                    #print(signal.compose().encode("utf-8"))
                     sock.sendall(signal.compose().encode("utf-8"))
                 sock.shutdown(socket.SHUT_WR)
         except Exception:
@@ -29,65 +32,98 @@ class Signaler:
         self.clear_row(3)
         self.clear_row(4)
         self.clear_row(5)
-        self.send()        
-        
+        self.send()
+
     def clear_row(self, row: int, length=5):
 
         for col in range(length):
             self.signals.append(self.emitter.off((row, col)))
-        
+
+    def fill_row(self, color, row: int, length=5):
+
+        for col in range(length):
+            self.signals.append(self.emitter.custom(color, (row, col)))
+
+    def reboot(self):
+        self.fill_row(SignalColor.SCARLET, 2)
+        self.send()
+
+    def halt(self):
+        self.fill_row(SignalColor.BLOOD_RED, 2)
+        self.send()
+
+    def vpn_on(self):
+        self.signals.append(self.emitter.custom(SignalColor.LIME, (2, 2)))
+        self.send()
+
+    def vpn_off(self):
+        self.signals.append(self.emitter.custom(SignalColor.OFF, (2, 2)))
+        self.send()
+
+    def cancel(self):
+        self.fill_row(SignalColor.OFF, 2)
+        self.fill_row(SignalColor.OFF, 3)
+        self.fill_row(SignalColor.OFF, 4)
+        self.fill_row(SignalColor.OFF, 5)
+        self.send()
 
     def base(self):
-        self.add_mem(0)
-        self.add_mem(1)
-        self.add_unused(2)
-        self.add_unused(3)
-        self.add_unused(4)
-        
+        self.mem(0)
+        self.mem(1)
         self.send()
 
-    def thermal(self):
-        self.clear_row(3, length=6)
+    def thermals(self):
+
         for i in range(6):
-            self.add_thermal(i, i)
+            self.thermal(i, i)
 
         self.send()
-        
+
     def disks_mounts(self):
         self.clear_row(4)
-        mounts = ["/", "/mnt/DataDisk", "/mnt/SupportDisk", "/mnt/BackupDisk", "/mnt/WhiteRabbit"]
-        
+        mounts = [
+            "/",
+            "/mnt/DataDisk",
+            "/mnt/SupportDisk",
+            "/mnt/BackupDisk",
+            "/mnt/WhiteRabbit",
+        ]
+
         for idx, mp in enumerate(mounts):
-            self.add_mount(mp, idx)
+            self.mount_point(mp, idx)
 
         self.send()
 
     def disks_spaces(self):
-        
-        mounts = ["/", "/mnt/DataDisk", "/mnt/SupportDisk", "/mnt/BackupDisk", "/mnt/WhiteRabbit"]
-        
+
+        mounts = [
+            "/",
+            "/mnt/DataDisk",
+            "/mnt/SupportDisk",
+            "/mnt/BackupDisk",
+            "/mnt/WhiteRabbit",
+        ]
+
         for idx, mp in enumerate(mounts):
-            self.add_free_space(mp, idx)
+            self.free_space(mp, idx)
 
         self.send()
 
-    def add_mount(self, mount_point, noled):
+    def mount_point(self, mount_point, noled):
         self.signals.append(self.emitter.mounts(mount_point, (4, noled)))
 
-    def add_free_space(self, mount_point, noled):
+    def free_space(self, mount_point, noled):
         self.signals.append(self.emitter.free_disk(mount_point, (5, noled)))
 
-    def add_thermal(self, thermal_id, noled):
-        self.signals.append(self.emitter.thermal(thermal_id, (3, noled)))
+    def thermal(self, zone_id, noled):
+        self.signals.append(self.emitter.thermal(zone_id, (3, noled)))
 
-    def add_mem(self, noled):
+    def mem(self, noled):
         self.signals.append(self.emitter.mem((2, noled)))
 
-    def add_bluetooth_signal(self, noled):
+    def bluetooth(self, noled):
         self.signals.append(self.emitter.bluetooth((2, noled)))
 
-    def add_unused(self, noled):
+    def unused(self, noled):
         self.signals.append(self.emitter.unused((2, noled)))
 
-    def add_red(self, noled):
-        self.signals.append(self.emitter.error((2, noled)))

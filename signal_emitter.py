@@ -7,27 +7,30 @@ import dbus
 
 class SignalEmitter:
 
-    def mem(self, sensor=(0, 0)) -> SuprSignal:
+    def mem(self, sensor) -> SuprSignal:
         mem = psutil.virtual_memory()
         consumed = mem.total - mem.available
         percent_consumed = int((consumed * 100) / mem.total)
         color = SignalColor.percentage(percent_consumed)
         return SuprSignal(sensor, color)
 
-    def free_disk(self, path="/", sensor=(0, 0)) -> SuprSignal:
+    def custom(self, color: SignalColor, sensor) -> SuprSignal:
+        return SuprSignal(sensor, color)
+
+    def free_disk(self, path, sensor) -> SuprSignal:
         try:
             if self.is_disk_mounted(path):
                 usage = psutil.disk_usage(path)
                 percent_used = int(usage.percent)
                 color = SignalColor.percentage(percent_used)
             else:
-                color = SignalColor.unavail()
+                color = SignalColor.off()
         except Exception:
             color = SignalColor.off()
-            
+
         return SuprSignal(sensor, color)
 
-    def wan(self, hostname, sensor=(0, 0)) -> SuprSignal:
+    def wan(self, hostname, sensor) -> SuprSignal:
         try:
             with socket.create_connection((hostname, 443), timeout=5):
                 return SuprSignal(sensor, SignalColor.on_off(True))
@@ -40,29 +43,32 @@ class SignalEmitter:
                 return True
         return False
 
-    def mounts(self, mount_point, sensor=(0, 0)) -> SuprSignal:
+    def mounts(self, mount_point, sensor) -> SuprSignal:
         if self.is_disk_mounted(mount_point):
             return SuprSignal(sensor, SignalColor.on_off(True))
-        return self.unused(sensor)
+        return self.off(sensor)
 
-    def bluetooth(self, sensor=(0, 0)) -> SuprSignal:
+    def bluetooth(self, sensor) -> SuprSignal:
         bus = dbus.SystemBus()
         adapter = bus.get_object("org.bluez", "/org/bluez/hci0")
         props = dbus.Interface(adapter, "org.freedesktop.DBus.Properties")
         powered = props.Get("org.bluez.Adapter1", "Powered")
         return SuprSignal(sensor, SignalColor.on_off(powered))
 
-    def thermal(self, zone=0, sensor=(0, 0)) -> SuprSignal:
+    def thermal(self, zone, sensor) -> SuprSignal:
         try:
             with open(f"/sys/class/thermal/thermal_zone{zone}/temp", "r") as f:
                 temp_milli = int(f.read().strip())
                 temp_c = int(temp_milli / 1000)
                 return SuprSignal(sensor, SignalColor.percentage(temp_c))
         except Exception:
-            return SuprSignal(sensor, SignalColor.unavail())
+            return SuprSignal(sensor, SignalColor.off())
 
-    def unused(self, sensor=(0,0)) -> SuprSignal:
+    def unused(self, sensor) -> SuprSignal:
         return SuprSignal(sensor, SignalColor.unused())
 
-    def off(self, sensor=(0,0)) -> SuprSignal:
+    def off(self, sensor) -> SuprSignal:
         return SuprSignal(sensor, SignalColor.off())
+
+    def custom(self, color: SignalColor, sensor) -> SuprSignal:
+        return SuprSignal(sensor, color)
