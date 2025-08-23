@@ -45,22 +45,23 @@ class Signaler:
             self.signals.append(self.emitter.custom(color, (row, col)))
 
     def reboot(self):
-        self.fill_row(SignalColor.SCARLET, 2)
+        self.fill_row(SignalColor.SCARLET, 1)
         self.send()
 
     def halt(self):
-        self.fill_row(SignalColor.BLOOD_RED, 2)
+        self.fill_row(SignalColor.BLOOD_RED, 1)
         self.send()
 
-    def vpn_on(self):
-        self.signals.append(self.emitter.custom(SignalColor.LIME, (2, 2)))
+    def tty_error(self):
+        self.fill_row(SignalColor.BLOOD_RED, 1)
         self.send()
-
-    def vpn_off(self):
-        self.signals.append(self.emitter.custom(SignalColor.OFF, (2, 2)))
+    
+    def tty_success(self):
+        self.fill_row(SignalColor.OLIVE, 1)
         self.send()
 
     def cancel(self):
+        self.fill_row(SignalColor.AMBER, 1)
         self.fill_row(SignalColor.OFF, 2)
         self.fill_row(SignalColor.OFF, 3)
         self.fill_row(SignalColor.OFF, 4)
@@ -70,6 +71,8 @@ class Signaler:
     def base(self):
         self.mem(0)
         self.mem(1)
+       
+
         self.send()
 
     def thermals(self):
@@ -109,6 +112,12 @@ class Signaler:
 
         self.send()
 
+    def vpn(self, noled):
+        self.signals.append(self.emitter.vpn((2, noled)))
+
+    def mem(self, noled):
+        self.signals.append(self.emitter.mem((2, noled)))
+
     def mount_point(self, mount_point, noled):
         self.signals.append(self.emitter.mounts(mount_point, (4, noled)))
 
@@ -118,12 +127,10 @@ class Signaler:
     def thermal(self, zone_id, noled):
         self.signals.append(self.emitter.thermal(zone_id, (3, noled)))
 
-    def mem(self, noled):
-        self.signals.append(self.emitter.mem((2, noled)))
-
     def bluetooth(self, noled):
         self.signals.append(self.emitter.bluetooth((2, noled)))
 
     def unused(self, noled):
         self.signals.append(self.emitter.unused((2, noled)))
+
 

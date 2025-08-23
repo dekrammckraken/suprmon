@@ -6,15 +6,14 @@ import sys
 
 def exec_command(sig: Signaler):
 
-    command = sys.argv[1]
+    if len(sys.argv) == 1:
+        command = "--cancel"
+    else:
+        command = sys.argv[1]
 
     match command:
         case "--cancel":
             return [sig.cancel]
-        case "--vpn_on":
-            return [sig.vpn_on]
-        case "--vpn_off":
-            return [sig.vpn_off]
         case "--base":
             return [sig.base]
         case "--therm":
@@ -31,7 +30,10 @@ def exec_command(sig: Signaler):
             return [sig.reboot]
         case "--halt":
             return [sig.halt]
-
+        case "--err":
+            return [sig.tty_error]
+        case "--ok":
+            return [sig.tty_success]
 
 
 def main():
@@ -39,11 +41,13 @@ def main():
         sig = Signaler()
         actions = exec_command(sig)
         for action in actions:
+            #print(action)
             action()
-     
+
         sys.exit(0)
     except Exception as e:
         print(f"Invalid command, use --command. {e}")
         sys.exit(1)
+
 
 main()

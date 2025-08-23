@@ -37,6 +37,16 @@ class SignalEmitter:
         except OSError:
             return SuprSignal(sensor, SignalColor.on_off(False))
 
+    def vpn(self, sensor) -> SuprSignal:
+        return SuprSignal(sensor, SignalColor.MINT)
+        interfaces = list(psutil.net_if_addrs().keys())
+        vpn_on = any(iface.startswith(("wg", "tun", "vpn")) for iface in interfaces if iface != "lo")
+
+        return SuprSignal(
+            sensor,
+            SignalColor.on_off(vpn_on),
+        )
+
     def is_disk_mounted(self, mount_point):
         for part in psutil.disk_partitions(all=False):
             if part.mountpoint == mount_point:
