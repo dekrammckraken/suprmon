@@ -61,7 +61,7 @@ class Signaler:
         self.send()
 
     def cancel(self):
-        self.fill_row(SignalColor.AMBER, 1)
+        self.fill_row(SignalColor.OFF, 1)
         self.fill_row(SignalColor.OFF, 2)
         self.fill_row(SignalColor.OFF, 3)
         self.fill_row(SignalColor.OFF, 4)
@@ -71,7 +71,6 @@ class Signaler:
     def base(self):
         self.mem(0)
         self.mem(1)
-       
 
         self.send()
 
