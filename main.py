@@ -7,7 +7,7 @@ import sys
 def exec_command(sig: Signaler):
 
     if len(sys.argv) == 1:
-        command = "--therm"
+        command = "--cancel"
     else:
         command = sys.argv[1]
 
