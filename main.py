@@ -34,6 +34,8 @@ def exec_command(sig: Signaler):
             return [sig.tty_error]
         case "--ok":
             return [sig.tty_success]
+        case "--help":
+            return [sig.help]
 
 
 def main():

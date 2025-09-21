@@ -70,15 +70,15 @@ class Signaler:
 
     def base(self):
         self.mem(0)
-        self.mem(1)
 
         self.send()
 
     def thermals(self):
-        for i in range(5):
-           self.thermal(i, i)
-
-        self.thermal_gpu(4)
+        self.thermal(0, 0) #acpitz
+        self.thermal(1, 1) #acpitz
+        self.thermal(2, 2) #pch_skylake
+        self.thermal(3, 3) #cpu
+        self.thermal_gpu(4) #gpu
         self.send()
 
     def disks_mounts(self):
@@ -133,3 +133,10 @@ class Signaler:
 
     def unused(self, noled):
         self.signals.append(self.emitter.unused((2, noled)))
+
+    def help(self):
+        print("=== Atom LED Panel ===")
+        print("○ ○ ○ ○ ○ = <mem,off,off,off,off>")
+        print("○ ○ ○ ○ ○ = <acpi,acpi,controller,cpu,off,gpu>")
+        print("○ ○ ○ ○ ○ = <mnt1,mnt2,mnt3,mnt4,mnt5>")
+        print("○ ○ ○ ○ ○ = <fspace1,fspace2,fspace3,fspace4,fspace5>")
