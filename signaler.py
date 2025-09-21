@@ -55,7 +55,7 @@ class Signaler:
     def tty_error(self):
         self.fill_row(SignalColor.BLOOD_RED, 1)
         self.send()
-    
+
     def tty_success(self):
         self.fill_row(SignalColor.OLIVE, 1)
         self.send()
@@ -75,14 +75,13 @@ class Signaler:
         self.send()
 
     def thermals(self):
+        for i in range(5):
+           self.thermal(i, i)
 
-        for i in range(6):
-            self.thermal(i, i)
-
+        self.thermal_gpu(4)
         self.send()
 
     def disks_mounts(self):
-        self.clear_row(4)
         mounts = [
             "/",
             "/mnt/DataDisk",
@@ -126,10 +125,11 @@ class Signaler:
     def thermal(self, zone_id, noled):
         self.signals.append(self.emitter.thermal(zone_id, (3, noled)))
 
+    def thermal_gpu(self, noled):
+         self.signals.append(self.emitter.thermal_gpu((3, noled)))
+
     def bluetooth(self, noled):
         self.signals.append(self.emitter.bluetooth((2, noled)))
 
     def unused(self, noled):
         self.signals.append(self.emitter.unused((2, noled)))
-
-

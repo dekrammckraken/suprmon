@@ -3,7 +3,7 @@ from signal_color import SignalColor
 import psutil
 import socket
 import dbus
-
+import subprocess
 
 class SignalEmitter:
 
@@ -73,6 +73,12 @@ class SignalEmitter:
                 return SuprSignal(sensor, SignalColor.percentage(temp_c))
         except Exception:
             return SuprSignal(sensor, SignalColor.off())
+
+    def thermal_gpu(self, sensor) -> SuprSignal:
+        #nvidia-smi --query-gpu=temperature.gpu --format=noheader
+        result = subprocess.run(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=noheader'],capture_output=True)
+        temp_c = int(result.stdout)
+        return SuprSignal(sensor, SignalColor.gpu_calc(temp_c))
 
     def unused(self, sensor) -> SuprSignal:
         return SuprSignal(sensor, SignalColor.unused())

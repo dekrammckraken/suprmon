@@ -38,7 +38,18 @@ class SignalColor(Enum):
         elif num < 100:
             return cls.BLOOD_RED
         else:
-            return cls.COAL
+            return cls.RED
+
+    @classmethod
+    def gpu_calc(cls, num: int):
+        if num < 60:
+            return cls.CREAM
+        elif num < 75:
+            return cls.AMBER
+        elif num < 85:
+            return cls.BLOOD_RED
+        else: 
+            return cls.RED
 
     @classmethod
     def on_off(cls, avail: bool):
